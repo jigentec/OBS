@@ -157,10 +157,10 @@ AgoraRtcEngine::AgoraRtcEngine()
 	, m_audioDeviceManager(nullptr)
 	, m_bInitialize(false)
 	, m_bJoinChannel(false)
-	 
 {
 	m_rtcEngine->setParameters("{\"che.audio.input.volume\": 60}");
 	m_rtcEngine->setParameters("{\"che.audio.current.recording.boostMode\": -1}");
+	m_rtcEngine->setParameters("{\"che.video.lowBitRateStreamParameter\":{\"width\":1280,\"height\":720,\"frameRate\":30,\"bitRate\":600}}");
 	m_externalAudioframe.buffer = NULL;
 	m_externalVideoFrame.buffer = NULL;
 	qRegisterMetaType<RtcStats>();
