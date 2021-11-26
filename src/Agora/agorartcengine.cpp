@@ -129,6 +129,7 @@ public:
 
 AgoraRtcEngine *AgoraRtcEngine::m_agoraEngine = nullptr;
 agora::media::IAudioFrameObserver::AudioFrame AgoraRtcEngine::m_externalAudioframe;
+std::string lowBitRateStreamParameter("{\"che.video.lowBitRateStreamParameter\":{\"width\":640,\"height\":360,\"frameRate\":30,\"bitRate\":600}}");
 
 AgoraRtcEngine *AgoraRtcEngine::GetInstance()
 {
@@ -160,7 +161,7 @@ AgoraRtcEngine::AgoraRtcEngine()
 {
 	m_rtcEngine->setParameters("{\"che.audio.input.volume\": 60}");
 	m_rtcEngine->setParameters("{\"che.audio.current.recording.boostMode\": -1}");
-	m_rtcEngine->setParameters("{\"che.video.lowBitRateStreamParameter\":{\"width\":1280,\"height\":720,\"frameRate\":30,\"bitRate\":600}}");
+	m_rtcEngine->setParameters(lowBitRateStreamParameter.c_str());
 	m_externalAudioframe.buffer = NULL;
 	m_externalVideoFrame.buffer = NULL;
 	qRegisterMetaType<RtcStats>();
@@ -403,7 +404,7 @@ int AgoraRtcEngine::joinChannel(const std::string &key,
 	else if (audioChannel == 2 && m_bHighQuality) {
 		profile = AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO;
 	}
-	
+
 	//m_rtcEngine->setAudioProfile(profile, (AUDIO_SCENARIO_TYPE)m_scenario);
 	//apm->setParameters("{\"che.audio.codec.name\":\"OPUSFB\"}");
 	AParameter apm(m_rtcEngine);
@@ -412,8 +413,11 @@ int AgoraRtcEngine::joinChannel(const std::string &key,
 	options.autoSubscribeAudio = muteAudio;
 	options.autoSubscribeVideo = muteVideo;
 
-	if (enableDual)
+	if (enableDual) {
 		m_rtcEngine->enableDualStreamMode(true);
+	    m_rtcEngine->setParameters(lowBitRateStreamParameter.c_str());
+	    apm->setParameters(lowBitRateStreamParameter.c_str());
+	}
 
 	int r =  m_rtcEngine->joinChannel(key.data(), channel.data(), "", uid, options);//
 	return r;
